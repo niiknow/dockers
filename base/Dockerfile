@@ -2,6 +2,8 @@ FROM alpine:edge
 
 MAINTAINER noogen <friends@niiknow.org>
 
+COPY rootfs/. /
+
 RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
     echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
 
@@ -10,6 +12,10 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
 
     # add packages
     apk add ca-certificates rsyslog logrotate runit curl && \
+
+    # Make info file about this build
+    mkdir -p /etc/BUILDS/ && \
+    printf "Build of niiknow/base, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` > /etc/BUILDS/00_niiknow_base && \
 
     # add extra package for installation
     cd /tmp && \
@@ -24,8 +30,7 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
     sed -i 's/$KLogPermitNonKernelFacility on/#$KLogPermitNonKernelFacility on/' /etc/rsyslog.conf && \
 
     # cleanup
-    rm -rf /var/cache/apk/* && \
-    rm -rf /tmp/*
+    rm -rf /var/cache/apk/* /tmp/*
 
 # Set environment variables.
 ENV HOME /root
