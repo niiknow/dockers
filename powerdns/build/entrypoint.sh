@@ -3,7 +3,7 @@ set -e
 
 # --help, --version
 [ "$1" = "--help" ] || [ "$1" = "--version" ] && exec pdns_server $1
-# treat everything expect -- as exec cmd
+# treat everything except -- as exec cmd
 [ "${1:0:2}" != "--" ] && exec "$@"
 
 # Set MySQL Credentials in pdns.conf
@@ -16,7 +16,7 @@ if $MYSQL_AUTOCONF ; then
 fi
 
 
-MYSQLCMD="mysql -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASS -r -N"
+MYSQLCMD="mysql -h $MYSQL_HOST -P $MYSQL_PORT -u $MYSQL_USER -p$MYSQL_PASS -r -N"
 
 # wait for Database come ready
 isDBup () {
