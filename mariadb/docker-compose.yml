@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  mysql:
+    image: niiknow/mariadb
+    container_name: mariadb
+    volumes:
+      - "/opt/mariadb/etc/mysql:/etc/mysql:rw"
+      - "/opt/mariadb/lib/mysql:/var/lib/mysql:rw"
+    environment:
+      - "MYSQL_DATABASE=mydb"
+      - "MYSQL_USER=myuser"
+      - "MYSQL_PASSWORD=mypassword"
+      - "MYSQL_ROOT_PASSWORD=myrootpassword"
+    ports:
+      - "4417:3306"
+    labels:
+      - "mariadb"
+    restart: unless-stopped

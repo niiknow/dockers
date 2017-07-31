@@ -55,6 +55,5 @@ if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema 
   fi
 fi
 
-
 # finished, stop mysqld for runit
 pkill mysqld || true

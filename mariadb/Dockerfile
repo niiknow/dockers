@@ -29,4 +29,4 @@ RUN apk update && apk upgrade && \
 
 EXPOSE 3306
 
-VOLUME ["/var/lib/mysql", "/var/log/mysql"]
+VOLUME ["/etc/mysql", "/var/lib/mysql", "/var/log/mysql"]

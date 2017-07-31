@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  mysql:
+    image: niiknow/powerdns
+    container_name: powerdns
+    volumes:
+      - "/opt/powerdns/etc/mysql:/etc/mysql:rw"
+      - "/opt/powerdns/lib/mysql:/var/lib/mysql:rw"
+      - "/opt/powerdns/etc/pdns:/etc/pdns:rw"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8001:8001"
+    labels:
+      - "powerdns"
+    restart: unless-stopped

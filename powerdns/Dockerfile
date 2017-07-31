@@ -8,7 +8,7 @@ ENV POWERDNS_VERSION=4.0.4 \
     MYSQL_PORT="3306" \
     MYSQL_DATABASE="pdns" \
     MYSQL_USER="pdns" \
-    MYSQL_PASS="pdns"
+    MYSQL_PASSWORD="pdns"
 
 COPY rootfs/. /
 
@@ -38,12 +38,11 @@ RUN apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc+
   apk del --purge build-deps && \
 
 # move syspreps
-  mv /etc/pdns/pdns.conf /tmp/pdns-bak.conf && \
-  rsync -a /tmp/syspreps/etc/pdns /etc/pdns && \
+  mv /tmp/syspreps/etc/pdns/* /etc/pdns/ && \
 
 # cleanup
-  rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/* /tmp/syspreps
+  rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/* /tmp/*
 
 EXPOSE 53/udp 53/tcp 80 8001 53000
 
-ENTRYPOINT ["/entrypoint.sh"]
+VOLUME ["/etc/mysql", "/var/lib/mysql", "/var/log/mysql", "/etc/pdns"]
