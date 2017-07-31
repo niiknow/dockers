@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+exec 2>&1
+exec chpst -updns pdns_server --daemon=no
