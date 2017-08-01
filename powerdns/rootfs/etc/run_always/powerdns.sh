@@ -55,8 +55,6 @@ if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema 
   fi
 fi
 
-MYSQL_ROOT_PASSWORD=`cat /var/lib/mysql/.root_password`
-
 echo "[i] PDNS stopping database for runit"
 
 # finished, stop it for runit

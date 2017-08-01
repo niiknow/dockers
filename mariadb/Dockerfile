@@ -15,11 +15,19 @@ RUN apk update && apk upgrade && \
 
   apk add --no-cache \
       mariadb \
-      mariadb-client \
-      pwgen && \
+      mariadb-client && \
 
 # comment out any "user" in the MySQL config, let it be set by startup or runit
   sed -ri 's/^user\s/#&/' /etc/mysql/my.cnf && \
+
+#
+  echo "skip-name-resolve" | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
+  && mv /tmp/my.cnf /etc/mysql/my.cnf && \
+  echo "skip-host-cache" | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
+  && mv /tmp/my.cnf /etc/mysql/my.cnf && \
+
+# change run socket
+  sed -i 's/\/run\/mysqld\/mysqld.sock/\/var\/run\/mysqld\/mysqld\.sock/' /etc/mysql/my.cnf && \
 
 # Disable confd service
   rm -rf /etc/services.d/*confd && \
