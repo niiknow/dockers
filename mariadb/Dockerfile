@@ -20,7 +20,8 @@ RUN apk update && apk upgrade && \
 # comment out any "user" in the MySQL config, let it be set by startup or runit
   sed -ri 's/^user\s/#&/' /etc/mysql/my.cnf && \
 
-#
+# comment out a few problematic configuration values
+# don't reverse lookup hostnames, they are usually another container
   echo "skip-name-resolve" | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
   && mv /tmp/my.cnf /etc/mysql/my.cnf && \
   echo "skip-host-cache" | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
