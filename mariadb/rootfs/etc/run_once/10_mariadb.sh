@@ -1,6 +1,6 @@
 #!/bin/sh
 me=`basename "$0"`
-echo "[i] running: $me"
+echo "[i] MySQL running: $me"
 
 if [[ -z "$MYSQL_DATABASE" ]]; then
   echo "[i] MYSQL_DATABASE is required, skipping creation"
@@ -65,15 +65,15 @@ if [ "$MYSQL_DATABASE" != "" ]; then
   fi
 fi
 
-echo "[i] initializing database"
+echo "[i] MySQL initializing database"
 /usr/bin/mysqld --user=mysql --init-file=$tfile >/dev/null 2>&1 &
 
 chown -R mysql:mysql /var/lib/mysql
 chown -R mysql:mysql /var/log/mysql
 chown -R mysql:mysql /run/mysqld
 
-echo "[i] stopping database for runit"
+echo "[i] MySQL stopping database for runit"
 # finished, stop it for runit
-pkill mysqld || true
+mysqladmin -u root -p"$MYSQL_ROOT_PASSWORD" shutdown
 
 rm -f $tfile

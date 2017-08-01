@@ -2,7 +2,7 @@
 
 # make sure this run after run_always/10_mariadb.sh
 me=`basename "$0"`
-echo "[i] running: $me"
+echo "[i] PDNS running: $me"
 
 # Set MySQL Credentials in pdns.conf
 if $MYSQL_AUTOCONF ; then
@@ -23,7 +23,7 @@ isDBup () {
 
 # if localhost then start mysqld
 if [ "$MYSQL_HOST" = "127.0.0.1" ]; then
-  /usr/bin/mysqld --user=mysql --console
+  /usr/bin/mysqld --user=mysql &
 else
   # do not run local mysql if not using 127.0.0.1
   rm -f /etc/service/mysqld
@@ -55,5 +55,9 @@ if [ "$(echo "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema 
   fi
 fi
 
-# finished, stop mysqld for runit
-pkill mysqld || true
+MYSQL_ROOT_PASSWORD=`cat /var/lib/mysql/.root_password`
+
+echo "[i] PDNS stopping database for runit"
+
+# finished, stop it for runit
+mysqladmin -u root -p "$MYSQL_ROOT_PASSWORD" shutdown

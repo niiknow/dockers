@@ -1,4 +1,4 @@
-FROM niiknow/mariadb:0.1.0
+FROM niiknow/mariadb:0.1.1
 
 MAINTAINER noogen <friends@niiknow.org>
 
@@ -10,9 +10,8 @@ ENV POWERDNS_VERSION=4.0.4 \
     MYSQL_USER="pdns" \
     MYSQL_PASSWORD="pdns"
 
-COPY rootfs/. /
-
-RUN apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc++ libgcc && \
+RUN \
+  apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc++ libgcc && \
   apk add --virtual build-deps g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev && \
 
 # Make info file about this build
@@ -37,11 +36,15 @@ RUN apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc+
 # purge build
   apk del --purge build-deps && \
 
-# move syspreps
-  mv /tmp/syspreps/etc/pdns/* /etc/pdns/ && \
-
 # cleanup
-  rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/* /tmp/*
+  rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
+
+COPY rootfs/. /
+
+RUN \
+# move syspreps
+  mv /root/syspreps/etc/pdns/* /etc/pdns/ && \
+  rm -rf /root/syspreps
 
 EXPOSE 53/udp 53/tcp 80 8001 53000
 
