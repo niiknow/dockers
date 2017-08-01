@@ -4,10 +4,13 @@
 me=`basename "$0"`
 echo "[i] PDNS running: $me"
 
+if [ -f "/var/lib/mysql/passwd.${MYSQL_USER}" ]; then
+  MYSQL_PASSWORD=`cat "/var/lib/mysql/passwd.${MYSQL_USER}"`
+fi
+
 # if localhost then start mysqld
 if [ "$MYSQL_HOST" = "127.0.0.1" ]; then
   mysqld_safe >/dev/null &
-  MYSQL_PASSWORD=`cat "/var/lib/mysql/passwd.${MYSQL_USER}"`
 else
   # do not run local mysql if not using 127.0.0.1
   rm -f /etc/service/mysqld

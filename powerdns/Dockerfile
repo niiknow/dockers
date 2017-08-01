@@ -1,4 +1,4 @@
-FROM niiknow/mariadb:0.1.4
+FROM niiknow/mariadb:0.1.5
 
 MAINTAINER noogen <friends@niiknow.org>
 
@@ -31,21 +31,23 @@ RUN \
 
 # setup user
   addgroup -S pdns 2>/dev/null && \
-  adduser -S -D -H -h /var/empty -s /bin/false -G pdns -g pdns pdns 2>/dev/null && \
+  adduser -S -D -H -h /var/empty -s /sbin/nologin -G pdns -g pdns pdns 2>/dev/null && \
 
 # purge build
   apk del --purge build-deps && \
 
 # cleanup
-  rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
+  rm -rf /tmp/pdns* /var/cache/apk/*
 
 COPY rootfs/. /
 
 RUN \
 # move syspreps
+  mkdir -p /var/run/pdns && \
+  chown -R pdns:pdns /var/run/pdns && \
   mv /root/syspreps/etc/pdns/* /etc/pdns/ && \
   rm -rf /root/syspreps
 
-EXPOSE 53/udp 53/tcp 80 8001 53000
+EXPOSE 53/udp 53/tcp 80 3306 8001 53000
 
 VOLUME ["/etc/mysql", "/var/lib/mysql", "/var/log/mysql", "/etc/pdns"]
