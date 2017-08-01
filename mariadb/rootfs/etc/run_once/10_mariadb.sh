@@ -43,8 +43,8 @@ mysql_install_db --user=mysql --datadir="$MYSQL_DATA_DIR" > /dev/null
 
 echo "[i] MySQL root Password: $MYSQL_ROOT_PASSWORD"
 cd "$MYSQL_DATA_DIR"
-echo "$MYSQL_ROOT_PASSWORD" > .root_password
-chmod 600 ".root_password"
+echo "$MYSQL_ROOT_PASSWORD" > passwd.root
+chmod 600 "passwd.root"
 
 # wait until mysql is running
 mysqld_safe --datadir="$MYSQL_DATA_DIR" >/dev/null &
@@ -64,6 +64,10 @@ if [ "$MYSQL_USER" ]; then
 
   echo "[i] Creating user: $MYSQL_USER with password $MYSQL_PASSWORD"
   mysql -uroot -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
+
+  cd "$MYSQL_DATA_DIR"
+  echo "$MYSQL_PASSWORD" > "passwd.${MYSQL_USER}"
+  chmod 600 "passwd.${MYSQL_USER}"
 
   # maybe need initialize a new database for the user
   if [ "$MYSQL_DATABASE" ]; then

@@ -4,6 +4,15 @@
 me=`basename "$0"`
 echo "[i] PDNS running: $me"
 
+# if localhost then start mysqld
+if [ "$MYSQL_HOST" = "127.0.0.1" ]; then
+  mysqld_safe >/dev/null &
+  MYSQL_PASSWORD=`cat "/var/lib/mysql/passwd.${MYSQL_USER}"`
+else
+  # do not run local mysql if not using 127.0.0.1
+  rm -f /etc/service/mysqld
+fi
+
 # Set MySQL Credentials in pdns.conf
 if $MYSQL_AUTOCONF ; then
   sed -r -i "s/^[# ]*gmysql-host=.*/gmysql-host=${MYSQL_HOST}/g" /etc/pdns/pdns.conf
@@ -20,14 +29,6 @@ isDBup () {
   echo "SHOW STATUS" | $MYSQLCMD 1>/dev/null
   echo $?
 }
-
-# if localhost then start mysqld
-if [ "$MYSQL_HOST" = "127.0.0.1" ]; then
-  mysqld_safe >/dev/null &
-else
-  # do not run local mysql if not using 127.0.0.1
-  rm -f /etc/service/mysqld
-fi
 
 RETRY=10
 until [ `isDBup` -eq 0 ] || [ $RETRY -le 0 ] ; do

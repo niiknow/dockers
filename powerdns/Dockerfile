@@ -8,7 +8,7 @@ ENV POWERDNS_VERSION=4.0.4 \
     MYSQL_PORT="3306" \
     MYSQL_DATABASE="pdns" \
     MYSQL_USER="pdns" \
-    MYSQL_PASSWORD="pdns"
+    MYSQL_PASSWORD=""
 
 RUN \
   apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc++ libgcc && \
