@@ -1,4 +1,4 @@
-FROM niiknow/mariadb:0.1.5
+FROM niiknow/mariadb:0.1.6
 
 MAINTAINER noogen <friends@niiknow.org>
 
