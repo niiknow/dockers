@@ -29,6 +29,9 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
     sed -i 's/$ModLoad imklog/#$ModLoad imklog/' /etc/rsyslog.conf && \
     sed -i 's/$KLogPermitNonKernelFacility on/#$KLogPermitNonKernelFacility on/' /etc/rsyslog.conf && \
 
+    # sort before run
+    sed -i "s/-exec.*/-print0 \| sort -zn \| xargs -0 -I '{}' \/bin\/sh '{}'/" /etc/runit/1 && \
+
     # cleanup
     rm -rf /var/cache/apk/* /tmp/*
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# make sure this run after run_always/10_mariadb.sh
+# make sure this run after run_once/10_mariadb.sh
 me=`basename "$0"`
 echo "[i] PDNS running: $me"
 
@@ -23,7 +23,7 @@ isDBup () {
 
 # if localhost then start mysqld
 if [ "$MYSQL_HOST" = "127.0.0.1" ]; then
-  /usr/bin/mysqld --user=mysql &
+  mysqld_safe >/dev/null &
 else
   # do not run local mysql if not using 127.0.0.1
   rm -f /etc/service/mysqld
@@ -57,5 +57,8 @@ fi
 
 echo "[i] PDNS stopping database for runit"
 
-# finished, stop it for runit
-mysqladmin -u root -p "$MYSQL_ROOT_PASSWORD" shutdown
+if [ "$MYSQL_HOST" = "127.0.0.1" ]; then
+  # finished, stop it for runit
+  mysqladmin -uroot shutdown
+fi
+

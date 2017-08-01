@@ -1,4 +1,4 @@
-FROM niiknow/base:0.1.0
+FROM niiknow/base:0.1.1
 
 MAINTAINER noogen <friends@niiknow.org>
 
