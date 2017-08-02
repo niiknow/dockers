@@ -11,33 +11,26 @@ ENV POWERDNS_VERSION=4.0.4 \
     MYSQL_PASSWORD=""
 
 RUN \
-  apk --update add mysql-client mariadb-client-libs libpq sqlite-libs libstdc++ libgcc && \
-  apk add --virtual build-deps g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev && \
-
-# Make info file about this build
-  printf "Build of niiknow/powerdns, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/powerdns && \
-
-# get powerdns
-  curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
-
-# build
-  cd /tmp/pdns-$POWERDNS_VERSION && \
-  ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-    --with-modules="bind gmysql gpgsql gsqlite3" --without-lua && \
-
-# install
-  make && make install-strip && cd / && \
-  mkdir -p /etc/pdns/conf.d && \
-
-# setup user
-  addgroup -S pdns 2>/dev/null && \
-  adduser -S -D -H -h /var/empty -s /sbin/nologin -G pdns -g pdns pdns 2>/dev/null && \
-
-# purge build
-  apk del --purge build-deps && \
-
-# cleanup
-  rm -rf /tmp/pdns* /var/cache/apk/*
+  # Make info file about this build
+    printf "Build of niiknow/powerdns, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/powerdns && \
+    apk --update add \
+      libstdc++ libgcc libressl libsodium boost-program_options \
+      mysql-client mariadb-client-libs mariadb-libs \
+      libpq postgresql-libs \
+      sqlite-libs lua && \
+    apk add --virtual build-deps \
+      file g++ make mariadb-dev postgresql-dev sqlite-dev lua-dev libressl-dev boost-dev libsodium-dev curl && \
+    curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
+    cd /tmp/pdns-$POWERDNS_VERSION && \
+    ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
+      --enable-libsodium --with-sqlite3 --enable-tools \
+      --with-modules="bind gmysql gpgsql gsqlite3" --with-dynmodules="pipe random lua remote" && \
+    make && make install-strip && cd / && \
+    mkdir -p /etc/pdns/conf.d && \
+    addgroup -S pdns 2>/dev/null && \
+    adduser -S -D -H -h /var/empty -s /sbin/nologin -G pdns -g pdns pdns 2>/dev/null && \
+    apk del --purge build-deps && \
+    rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
 
 COPY rootfs/. /
 

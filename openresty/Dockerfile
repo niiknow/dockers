@@ -50,61 +50,61 @@ ARG _RESTY_CONFIG_DEPS="--with-openssl=/tmp/openssl-${RESTY_OPENSSL_VERSION} --w
 
 RUN \
 
-# Make info file about this build
-  printf "Build of niiknow/openresty, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/openresty && \
+  # Make info file about this build
+    printf "Build of niiknow/openresty, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/openresty && \
 
-  apk add --no-cache --virtual .build-deps \
-      curl \
-      gd-dev \
-      geoip-dev \
-      libxslt-dev \
-      perl-dev \
-      readline-dev \
-      zlib-dev \
-  && apk add --no-cache \
-      build-base \
-      curl \
-      gd \
-      geoip \
-      libgcc \
-      libxslt \
-      linux-headers \
-      make \
-      perl \
-      unzip \
-      zlib \
-  && cd /tmp \
-  && curl -fSL https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
-  && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
-  && curl -fSL https://ftp.pcre.org/pub/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
-  && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
-  && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
-  && tar xzf openresty-${RESTY_VERSION}.tar.gz \
-  && cd /tmp/openresty-${RESTY_VERSION} \
-  && ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} \
-  && make -j${RESTY_J} \
-  && make -j${RESTY_J} install \
-  && cd /tmp \
-  && rm -rf \
-      openssl-${RESTY_OPENSSL_VERSION} \
-      openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
-      openresty-${RESTY_VERSION}.tar.gz openresty-${RESTY_VERSION} \
-      pcre-${RESTY_PCRE_VERSION}.tar.gz pcre-${RESTY_PCRE_VERSION} \
-  && curl -fSL http://luarocks.org/releases/luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz -o luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
-  && tar xzf luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
-  && cd luarocks-${RESTY_LUAROCKS_VERSION} \
-  && ./configure \
-      --prefix=/usr/local/openresty/luajit \
-      --with-lua=/usr/local/openresty/luajit \
-      --lua-suffix=jit-2.1.0-beta2 \
-      --with-lua-include=/usr/local/openresty/luajit/include/luajit-2.1 \
-  && make build \
-  && make install \
-  && cd /tmp \
-  && rm -rf luarocks-${RESTY_LUAROCKS_VERSION} luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
-  && apk del .build-deps \
-  && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
-  && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
+    apk add --no-cache --virtual .build-deps \
+        curl \
+        gd-dev \
+        geoip-dev \
+        libxslt-dev \
+        perl-dev \
+        readline-dev \
+        zlib-dev \
+    && apk add --no-cache \
+        build-base \
+        curl \
+        gd \
+        geoip \
+        libgcc \
+        libxslt \
+        linux-headers \
+        make \
+        perl \
+        unzip \
+        zlib \
+    && cd /tmp \
+    && curl -fSL https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+    && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+    && curl -fSL https://ftp.pcre.org/pub/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
+    && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
+    && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
+    && tar xzf openresty-${RESTY_VERSION}.tar.gz \
+    && cd /tmp/openresty-${RESTY_VERSION} \
+    && ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} \
+    && make -j${RESTY_J} \
+    && make -j${RESTY_J} install \
+    && cd /tmp \
+    && rm -rf \
+        openssl-${RESTY_OPENSSL_VERSION} \
+        openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+        openresty-${RESTY_VERSION}.tar.gz openresty-${RESTY_VERSION} \
+        pcre-${RESTY_PCRE_VERSION}.tar.gz pcre-${RESTY_PCRE_VERSION} \
+    && curl -fSL http://luarocks.org/releases/luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz -o luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
+    && tar xzf luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
+    && cd luarocks-${RESTY_LUAROCKS_VERSION} \
+    && ./configure \
+        --prefix=/usr/local/openresty/luajit \
+        --with-lua=/usr/local/openresty/luajit \
+        --lua-suffix=jit-2.1.0-beta2 \
+        --with-lua-include=/usr/local/openresty/luajit/include/luajit-2.1 \
+    && make build \
+    && make install \
+    && cd /tmp \
+    && rm -rf luarocks-${RESTY_LUAROCKS_VERSION} luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz \
+    && apk del .build-deps \
+    && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
+    && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
 
 COPY rootfs/. /
 
