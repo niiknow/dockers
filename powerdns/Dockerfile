@@ -39,7 +39,7 @@ RUN \
   mkdir -p /var/run/pdns && \
   chown -R pdns:pdns /var/run/pdns && \
   mv /root/syspreps/etc/pdns/* /etc/pdns/ && \
-  rysnc -a /etc/pdns/ /etc/pdns-bak && \
+  rsync -a /etc/pdns/ /etc/pdns-bak && \
   rm -rf /root/syspreps
 
 EXPOSE 53/udp 53/tcp 80 3306 8001 53000
