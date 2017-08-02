@@ -2,6 +2,10 @@
 me=`basename "$0"`
 echo "[i] MySQL running: $me"
 
+if [ ! -f /etc/mysql/my.conf ]; then
+  rsync -a /etc/mysql-bak/ /etc/mysql
+fi
+
 if [[ -z "$MYSQL_DATABASE" ]]; then
   echo "[i] MYSQL_DATABASE is required, skipping creation"
   exit 0

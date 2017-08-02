@@ -13,7 +13,7 @@ ENV POWERDNS_VERSION=4.0.4 \
 RUN \
   # Make info file about this build
     printf "Build of niiknow/powerdns, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/powerdns && \
-    apk --update add \
+    apk --update add rsync \
       libstdc++ libgcc libressl libsodium boost-program_options \
       mysql-client mariadb-client-libs mariadb-libs \
       libpq postgresql-libs \
@@ -39,6 +39,7 @@ RUN \
   mkdir -p /var/run/pdns && \
   chown -R pdns:pdns /var/run/pdns && \
   mv /root/syspreps/etc/pdns/* /etc/pdns/ && \
+  rysnc -a /etc/pdns/ /etc/pdns-bak && \
   rm -rf /root/syspreps
 
 EXPOSE 53/udp 53/tcp 80 3306 8001 53000

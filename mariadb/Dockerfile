@@ -12,7 +12,7 @@ RUN \
   # Make info file about this build
     printf "Build of niiknow/mariadb, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/10_mariadb && \
 
-    apk add --no-cache \
+    apk add --no-cache rsync \
         mariadb \
         mariadb-client && \
 
@@ -31,6 +31,9 @@ RUN \
 
   # Disable confd service
     rm -rf /etc/services.d/*confd && \
+
+  # backup mysql conf
+    rysnc -a /etc/mysql/ /etc/mysql-bak && \
 
   # cleanup
     rm -rf /var/cache/apk/*
