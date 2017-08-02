@@ -33,7 +33,7 @@ RUN \
     rm -rf /etc/services.d/*confd && \
 
   # backup mysql conf
-    rysnc -a /etc/mysql/ /etc/mysql-bak && \
+    rsync -a /etc/mysql/ /etc/mysql-bak && \
 
   # cleanup
     rm -rf /var/cache/apk/*
