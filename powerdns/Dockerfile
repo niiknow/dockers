@@ -6,8 +6,8 @@ ENV POWERDNS_VERSION=4.0.4 \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST="127.0.0.1" \
     MYSQL_PORT="3306" \
-    MYSQL_DATABASE="pdns" \
-    MYSQL_USER="pdns" \
+    MYSQL_DATABASE="powerdns_db" \
+    MYSQL_USER="powerdns_dbuser" \
     MYSQL_PASSWORD=""
 
 RUN \
