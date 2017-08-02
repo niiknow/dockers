@@ -1,7 +1,7 @@
 # mariadb
-alpine base MariaDB image run as an runit server.  Currently, alpine highest MariaDB repo is 10.1.x so that is the max this image will support.  It implement your standard MYSQL docker container for running MARIADB as mysqld/server.  
+Alpine base MariaDB image run as a runit service.  The image implement your standard MYSQL docker container for running MariaDB as a mysqld/server.  
 
-This image was created for the purpose of being use as a base image to app that require MYSQL database.  You should use the official image if you wish to run standalone MYSQL container.
+Use this image with App that requires MYSQL database.  Otherwise, you should use the official image when running as a standalone MYSQL container.
 
 # Environment Variables
 
