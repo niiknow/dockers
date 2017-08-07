@@ -2,8 +2,7 @@ FROM niiknow/mariadb:0.2.0
 
 MAINTAINER noogen <friends@niiknow.org>
 
-ENV POWERDNS_VERSION=4.0.4 \
-    MYSQL_AUTOCONF=true \
+ENV MYSQL_AUTOCONF=true \
     MYSQL_HOST="127.0.0.1" \
     MYSQL_PORT="3306" \
     MYSQL_DATABASE="powerdns_db" \
@@ -13,24 +12,10 @@ ENV POWERDNS_VERSION=4.0.4 \
 RUN \
   # Make info file about this build
     printf "Build of niiknow/powerdns, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/powerdns && \
-    apk --update add rsync \
-      libstdc++ libgcc libressl libsodium boost-program_options \
-      mysql-client mariadb-client-libs mariadb-libs \
-      libpq postgresql-libs \
-      sqlite-libs lua && \
-    apk add --virtual build-deps \
-      file g++ make mariadb-dev postgresql-dev sqlite-dev lua-dev libressl-dev boost-dev libsodium-dev curl && \
-    curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
-    cd /tmp/pdns-$POWERDNS_VERSION && \
-    ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-      --enable-libsodium --with-sqlite3 --enable-tools \
-      --with-modules="bind gmysql gpgsql gsqlite3" --with-dynmodules="pipe random lua remote" && \
-    make && make install-strip && cd / && \
-    mkdir -p /etc/pdns/conf.d && \
-    addgroup -S pdns 2>/dev/null && \
-    adduser -S -D -H -h /var/empty -s /sbin/nologin -G pdns -g pdns pdns 2>/dev/null && \
-    apk del --purge build-deps && \
-    rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
+    apk --update add \
+        pdns pdns-backend-sqlite3 pdns-backend-mysql pdns-recursor \
+        mariadb-client bash && \
+    rm -rf /var/cache/apk/*
 
 COPY rootfs/. /
 
@@ -38,10 +23,8 @@ RUN \
 # move syspreps
   mkdir -p /var/run/pdns && \
   chown -R pdns:pdns /var/run/pdns && \
-  mv /root/syspreps/etc/pdns/* /etc/pdns/ && \
-  rsync -a /etc/pdns/ /etc/pdns-bak && \
-  rm -rf /root/syspreps
+  rsync -a /etc/pdns/ /etc/pdns-bak
 
-EXPOSE 53/udp 53/tcp 80 3306 8001 53000
+EXPOSE 53/udp 53/tcp 3306 5300/udp 5300/tcp 8081
 
 VOLUME ["/etc/mysql", "/var/lib/mysql", "/var/log/mysql", "/etc/pdns"]

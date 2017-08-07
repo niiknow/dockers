@@ -1,0 +1,39 @@
+### Common
+setgid=pdns
+setuid=pdns
+daemon=no
+guardian=no
+local-address=0.0.0.0
+local-port=53
+socket-dir=/var/run/pdns
+
+## Backend
+# mariadb(mysql)
+launch=gmysql
+gmysql-host=127.0.0.1
+gmysql-port=3306
+gmysql-dbname=powerdns_db
+gmysql-user=powerdns_dbuser
+gmysql-password=
+gmysql-dnssec=yes
+
+### Recursor - need to be removed in 4.1
+recursor=127.0.0.1:5300
+outgoing-axfr-expand-alias=yes
+allow-recursion=127.0.0.1
+lazy-recursion=yes
+
+### WebServer
+version-string=powerdns
+webserver=yes
+webserver-address=0.0.0.0
+webserver-port=8081
+
+### API
+api=yes
+api-key=
+
+### Other
+master=yes
+
+# slave=no

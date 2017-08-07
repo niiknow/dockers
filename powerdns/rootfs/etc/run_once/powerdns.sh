@@ -4,8 +4,13 @@
 me=`basename "$0"`
 echo "[i] PDNS running: $me"
 
-if [ ! -f /etc/pdns/pdns.conf ]; then
+if [ -f /etc/pdns/pdns.new ]; then
   rsync -a /etc/pdns-bak/ /etc/pdns
+  rm -f /etc/pdns/pdns.dist
+  mv /etc/pdns/pdns.conf /etc/pdns/pdns.dist
+  mv /etc/pdns/pdns.new /etc/pdns/pdns.conf
+  mv /etc/pdns/recursor.conf /etc/pdns/recursor.dist
+  mv /etc/pdns/recursor.new /etc/pdns/recursor.conf
 fi
 
 if [ -f "/var/lib/mysql/passwd.${MYSQL_USER}" ]; then
