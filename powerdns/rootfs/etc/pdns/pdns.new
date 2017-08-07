@@ -21,7 +21,6 @@ gmysql-dnssec=yes
 recursor=127.0.0.1:5300
 outgoing-axfr-expand-alias=yes
 allow-recursion=127.0.0.1
-lazy-recursion=yes
 
 ### WebServer
 version-string=powerdns
