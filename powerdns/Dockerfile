@@ -14,7 +14,7 @@ RUN \
     printf "Build of niiknow/powerdns, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/powerdns && \
     apk --update add \
         pdns pdns-backend-sqlite3 pdns-backend-mysql pdns-recursor \
-        mariadb-client bash && \
+        mariadb-client bash rsync && \
     rm -rf /var/cache/apk/*
 
 COPY rootfs/. /
