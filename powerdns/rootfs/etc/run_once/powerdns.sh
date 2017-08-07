@@ -9,6 +9,8 @@ if [ -f /etc/pdns/pdns.new ]; then
   rm -f /etc/pdns/pdns.dist
   mv /etc/pdns/pdns.conf /etc/pdns/pdns.dist
   mv /etc/pdns/pdns.new /etc/pdns/pdns.conf
+
+  rm -f /etc/pdns/recursor.dist
   mv /etc/pdns/recursor.conf /etc/pdns/recursor.dist
   mv /etc/pdns/recursor.new /etc/pdns/recursor.conf
 fi
