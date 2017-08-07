@@ -4,7 +4,7 @@
 me=`basename "$0"`
 echo "[i] PDNS running: $me"
 
-if [ -f /etc/pdns/pdns.new ]; then
+if [ ! -f /etc/pdns/pdns.conf ]; then
   rsync -a /etc/pdns-bak/ /etc/pdns
   rm -f /etc/pdns/pdns.dist
   mv /etc/pdns/pdns.conf /etc/pdns/pdns.dist
