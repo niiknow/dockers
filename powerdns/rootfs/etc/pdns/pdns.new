@@ -28,12 +28,12 @@ version-string=powerdns
 webserver=yes
 webserver-address=0.0.0.0
 webserver-port=8081
+#webserver-password=
 
 ### API
-api=yes
-api-key=
+#api=yes
+#api-key=
 
 ### Other
 master=yes
-
-# slave=no
+#slave=no
