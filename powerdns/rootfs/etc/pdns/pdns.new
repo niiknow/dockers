@@ -18,15 +18,18 @@ gmysql-password=
 gmysql-dnssec=yes
 
 ### Recursor - need to be removed in 4.1
+# this is needed for ALIAS record
 recursor=127.0.0.1:5300
 outgoing-axfr-expand-alias=yes
-allow-recursion=127.0.0.1
+allow-recursion=127.0.0.0/8, 173.255.229.80, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+allow-axfr-ips=127.0.0.0/8, 173.255.229.80, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+disable-axfr=no
 
 ### WebServer
 version-string=powerdns
-webserver=yes
-webserver-address=0.0.0.0
-webserver-port=8081
+#webserver=yes
+#webserver-address=0.0.0.0
+#webserver-port=8081
 #webserver-password=
 
 ### API
