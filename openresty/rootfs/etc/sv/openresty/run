@@ -1,4 +1,6 @@
 #!/bin/sh -e
 
+source /etc/envvars
+
 exec 2>&1
 exec /usr/local/openresty/bin/openresty -g "daemon off;"
