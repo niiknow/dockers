@@ -49,7 +49,10 @@ ARG _RESTY_CONFIG_DEPS="--with-openssl=/tmp/openssl-${RESTY_OPENSSL_VERSION} --w
 # 3) Build OpenResty
 # 4) Cleanup
 
-RUN apk add --no-cache --virtual .build-deps \
+RUN \
+  # Make info file about this build
+    printf "Build of niiknow/openresty, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/openresty && \
+    apk add --no-cache --virtual .build-deps \
         curl \
         gd-dev \
         geoip-dev \
