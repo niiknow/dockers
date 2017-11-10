@@ -1,0 +1,19 @@
+version: "3.3"
+
+services:
+  powerdns:
+    image: niiknow/powerdns
+    container_name: powerdns
+    environment:
+      - "SUPERMASTER_IP=x.x.x.x"
+      - "SLAVE_DNSNAME=ns2.yourdomain.com"
+    volumes:
+      - "~/pdns/etc/mysql:/etc/mysql:rw"
+      - "~/pdns/etc/pdns:/etc/pdns:rw"
+      - "~/pdns/data:/var/lib/mysql:rw"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    labels:
+      - "powerdns"
+    restart: unless-stopped
