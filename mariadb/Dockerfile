@@ -1,6 +1,6 @@
 FROM niiknow/base:0.1.4
 
-MAINTAINER noogen <friends@niiknow.org>
+LABEL maintainer="noogen <friends@niiknow.org>"
 
 ENV LANG="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8" \

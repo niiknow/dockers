@@ -1,6 +1,6 @@
 FROM alpine:edge
 
-MAINTAINER noogen <friends@niiknow.org>
+LABEL maintainer="noogen <friends@niiknow.org>"
 
 COPY rootfs/. /
 

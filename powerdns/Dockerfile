@@ -1,6 +1,6 @@
 FROM niiknow/mariadb:0.2.0
 
-MAINTAINER noogen <friends@niiknow.org>
+LABEL maintainer="noogen <friends@niiknow.org>"
 
 ENV MYSQL_AUTOCONF=true \
     MYSQL_HOST="127.0.0.1" \

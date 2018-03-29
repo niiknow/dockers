@@ -116,9 +116,10 @@ RUN \
     && apk del .build-deps .gettext \
     && mv /tmp/envsubst /usr/local/bin/ \
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
-    && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
+    && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log \
+    && ln -sf /usr/local/openresty/bin/openresty /usr/local/openresty/bin/nginx
 
 COPY rootfs/. /
 
 # Add additional binaries into PATH for convenience
-ENV PATH=$PATH:/usr/local/openresty/luajit/bin/:/usr/local/openresty/nginx/sbin/:/usr/local/openresty/bin/
+ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
