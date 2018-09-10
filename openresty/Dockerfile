@@ -1,12 +1,12 @@
-FROM niiknow/base:0.1.5
+FROM niiknow/base:0.1.6
 
-MAINTAINER noogen <friends@niiknow.org>
+LABEL maintainer="noogen <friends@niiknow.org>"
 
 # Docker Build Arguments
-ARG RESTY_VERSION="1.13.6.1"
-ARG RESTY_LUAROCKS_VERSION="2.4.3"
+ARG RESTY_VERSION="1.13.6.2"
+ARG RESTY_LUAROCKS_VERSION="2.4.4"
 ARG RESTY_OPENSSL_VERSION="1.0.2k"
-ARG RESTY_PCRE_VERSION="8.41"
+ARG RESTY_PCRE_VERSION="8.42"
 ARG RESTY_J="1"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-file-aio \
@@ -14,7 +14,7 @@ ARG RESTY_CONFIG_OPTIONS="\
     --with-http_auth_request_module \
     --with-http_dav_module \
     --with-http_flv_module \
-    --with-http_geoip_module=dynamic \
+    --with-http_geoip_module \
     --with-http_gunzip_module \
     --with-http_gzip_static_module \
     --with-http_image_filter_module=dynamic \

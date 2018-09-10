@@ -1,4 +1,4 @@
-FROM niiknow/base:0.1.5
+FROM niiknow/base:0.1.6
 
 LABEL maintainer="noogen <friends@niiknow.org>"
 
@@ -6,7 +6,7 @@ ENV LANG="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     MARIADB_MAJOR=10.2 \
-    MARIADB_VERSION=10.2.13
+    MARIADB_VERSION=10.2.17
 
 COPY rootfs/. /
 
