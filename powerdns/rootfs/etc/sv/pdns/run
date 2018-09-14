@@ -1,6 +1,0 @@
-#!/bin/sh -e
-
-exec 2>&1
-# exec chpst -u pdns pdns_server --daemon=no
-# have to run as stupid root to bind port 53
-exec pdns_server --daemon=no

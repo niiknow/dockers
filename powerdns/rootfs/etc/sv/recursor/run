@@ -1,8 +1,0 @@
-#!/bin/sh -e
-
-exec 2>&1
-# exec chpst -u pdns pdns_recursor --daemon=no
-# have to run as stupid root to bind port 53
-exec pdns_recursor --daemon=no
-
-
