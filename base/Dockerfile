@@ -32,14 +32,20 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
     # sort before run
     sed -i "s/-exec.*/-print0 \| sort -zn \| xargs -0 -I '{}' '{}'/" /etc/runit/1 && \
 
+    # make app user with no password and make sudoer
+    mkdir -p /app && \
+    adduser -D app -s /bin/bash --home /app && \
+    adduser app wheel && \
+    echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel && \
+
     # cleanup
     rm -rf /var/cache/apk/* /tmp/*
 
 # Set environment variables.
-ENV HOME /root
+ENV HOME /app
 
 # Define working directory.
-WORKDIR /root
+WORKDIR /app
 
 # Define default command.
 CMD ["/boot.sh"]

@@ -14,7 +14,7 @@ ARG RESTY_CONFIG_OPTIONS="\
     --with-http_auth_request_module \
     --with-http_dav_module \
     --with-http_flv_module \
-    --with-http_geoip_module \
+    --with-http_geoip_module=dynamic \
     --with-http_gunzip_module \
     --with-http_gzip_static_module \
     --with-http_image_filter_module=dynamic \
@@ -120,6 +120,12 @@ RUN \
     && ln -sf /usr/local/openresty/bin/openresty /usr/local/openresty/bin/nginx
 
 COPY rootfs/. /
+
+# Set environment variables.
+ENV HOME /root
+
+# Define working directory.
+WORKDIR /root
 
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
