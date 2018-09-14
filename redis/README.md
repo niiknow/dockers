@@ -13,10 +13,10 @@ Example Docker Compose:
   redis:
     image: "niiknow/redis"
     container_name: docker-redis
-    command: redis-server /etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - "./data/redis:/data"
-      - "./data/redis.conf:/etc/redis/redis.conf"
+      - "./data/redis.conf:/usr/local/etc/redis/redis.conf"
     ulimits:
       nproc: 65535
       nofile:
