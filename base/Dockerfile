@@ -11,7 +11,7 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
     apk update && apk upgrade && \
 
     # add packages
-    apk add ca-certificates rsyslog logrotate runit curl && \
+    apk add ca-certificates rsyslog logrotate runit curl sudo bash && \
 
     # Make info file about this build
     mkdir -p /etc/BUILDS/ && \
@@ -43,6 +43,8 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
 
 # Set environment variables.
 ENV HOME /app
+
+USER app
 
 # Define working directory.
 WORKDIR /app
