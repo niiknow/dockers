@@ -1,4 +1,4 @@
-FROM niiknow/mariadb:0.2.0
+FROM niiknow/mariadb:0.2.1
 
 LABEL maintainer="noogen <friends@niiknow.org>"
 

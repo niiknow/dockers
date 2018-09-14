@@ -1,4 +1,4 @@
-FROM niiknow/base:0.1.6
+FROM niiknow/base:0.2.1
 
 LABEL maintainer="noogen <friends@niiknow.org>"
 
@@ -120,12 +120,6 @@ RUN \
     && ln -sf /usr/local/openresty/bin/openresty /usr/local/openresty/bin/nginx
 
 COPY rootfs/. /
-
-# Set environment variables.
-ENV HOME /root
-
-# Define working directory.
-WORKDIR /root
 
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
