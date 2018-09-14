@@ -3,6 +3,7 @@ FROM niiknow/base:0.2.1
 LABEL maintainer="noogen <friends@niiknow.org>"
 
 # Docker Build Arguments
+ARG NGINX_VERSION="1.13.6"
 ARG RESTY_VERSION="1.13.6.2"
 ARG RESTY_LUAROCKS_VERSION="2.4.4"
 ARG RESTY_OPENSSL_VERSION="1.0.2k"
@@ -40,18 +41,16 @@ ARG RESTY_CONFIG_OPTIONS="\
     "
 ARG RESTY_CONFIG_OPTIONS_MORE=""
 
-# These are not intended to be user-specified
+# Our specific config to allow for backward compatibility on certain sites
+# this is the main reason we fork and do not use the original openssl docker
 ARG _RESTY_CONFIG_DEPS="--with-openssl=/tmp/openssl-${RESTY_OPENSSL_VERSION} --with-openssl-opt=enable-weak-ssl-ciphers --with-pcre=/tmp/pcre-${RESTY_PCRE_VERSION}"
-
 
 # 1) Install apk dependencies
 # 2) Download and untar OpenSSL, PCRE, and OpenResty
 # 3) Build OpenResty
 # 4) Cleanup
 
-RUN \
-  # Make info file about this build
-    printf "Build of niiknow/openresty, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/openresty && \
+RUN printf "Build of niiknow/openresty, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` >> /etc/BUILDS/10_openresty && \
     apk add --no-cache --virtual .build-deps \
         curl \
         gd-dev \
@@ -117,7 +116,8 @@ RUN \
     && mv /tmp/envsubst /usr/local/bin/ \
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
     && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log \
-    && ln -sf /usr/local/openresty/bin/openresty /usr/local/openresty/bin/nginx
+    && ln -sf /usr/local/openresty/bin/openresty /usr/local/openresty/bin/nginx \
+    && rm -rf /var/cache/apk/* /tmp/*
 
 COPY rootfs/. /
 
