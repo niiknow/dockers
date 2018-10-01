@@ -1,7 +1,7 @@
 FROM node:10-alpine
 LABEL maintainer="noogen <friends@niiknow.org>"
 USER root
-ENV HOME /root
+ENV HOME=/root PATH=$PATH:/usr/local/bin
 WORKDIR /root
 COPY rootfs/. /
 RUN mkdir -p /etc/BUILDS/ \
@@ -17,10 +17,11 @@ RUN mkdir -p /etc/BUILDS/ \
  && cd /app/haraka \
  && npm install \
  && chown -R node:node /app \
- && mkdir -p /app/haraka-bak \
- && rsync -a /app/haraka /app/haraka-bak \
+ && mkdir -p /app/haraka-bak /app/haraka/plugins \
+ && rsync -raz /app/haraka/ /app/haraka-bak \
  && chown -R node:node /app/haraka-bak \
  && curl -fSL https://raw.githubusercontent.com/madeingnecca/haraka-plugins/master/relay_fake.js -o /app/haraka/plugins/relay_fake.js \
  && rm -rf /var/cache/apk/*
-
 EXPOSE 25 80 443 465 587
+VOLUME ["/app"]
+CMD ["/boot.sh"]

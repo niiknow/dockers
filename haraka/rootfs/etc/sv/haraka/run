@@ -2,20 +2,7 @@
 
 source /etc/envvars
 
-cd /app/haraka
-
-# restore backup folder
-if [ ! -f /app/haraka/package.json ]; then
-  rsync --update -raz --progress --exclude="config" /app/haraka-bak/ /app/haraka
-
-fi
-
-if [ ! -f /app/haraka/config/me ]; then
-  rsync --update -raz --progress /app/haraka/config/ /app/haraka/config
-fi
-
-echo "$SMTP_HOST" > /app/haraka/config/me
-chown -R node:node /app/haraka/haraka
+export PATH=$PATH:/usr/local/bin
 
 exec 2>&1
-exec chpst -u node:node env HOME='/app/haraka' haraka -c /app/haraka/haraka 2>&1
+exec /usr/local/bin/haraka -c /app/haraka 2>&1
