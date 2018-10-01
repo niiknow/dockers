@@ -22,5 +22,5 @@ RUN mkdir -p /etc/BUILDS/ \
  && apk del --purge deps \
  && rm -rf /var/cache/apk/* /tmp/* /sysprepz/*
 EXPOSE 25 80 443 465 587
-VOLUME ["/app"]
+VOLUME ["/app/haraka"]
 CMD ["/boot.sh"]

@@ -4,14 +4,13 @@ var AWS = require('aws-sdk'), util = require('util');
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
+  region: process.env.AWS_DEFAULT_REGION
 });
 
 exports.register = function () {
   this.logdebug("Initializing outbound_bounce_to_s3");
 
   this.s3Bucket         = process.env.AWS_BUCKET;
-  this.zipBeforeUpload  = true;
   this.fileExtension    = '.json';
   this.copyAllAddresses = true;
   this.bucketPrefix     = 'email/outbound/';
@@ -55,15 +54,15 @@ exports.hook_bounce = function (next, connection) {
   };
 
   connection.logdebug(util.inspect(innerMessage, false, null));
-  var addresses = plugin.copyAllAddresses ? transaction.rcpt_to : transaction.rcpt_to[0];
 
-  async.each(, function (address, eachCallback) {
-    var key = address.user + plugin.fileExtension;
+  async.each(addresses, function (address, eachCallback) {
+    var key = address + plugin.fileExtension;
 
     var params = {
       Bucket: plugin.s3Bucket,
       Key: plugin.bucketPrefix + key,
-      Body: body
+      Body: body,
+      ContentType: 'application/json'
     };
 
     s3.upload(params).on('httpUploadProgress', function (evt) {
