@@ -17,9 +17,11 @@ RUN echo "@community http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/
     sed -i 's/$ModLoad imklog/#$ModLoad imklog/' /etc/rsyslog.conf && \
     sed -i 's/$KLogPermitNonKernelFacility on/#$KLogPermitNonKernelFacility on/' /etc/rsyslog.conf && \
     sed -i "s/-exec.*/-print0 \| sort -zn \| xargs -0 -I '{}' '{}'/" /etc/runit/1 && \
-    mkdir -p /app && \
-    adduser -D app -s /bin/bash -h /usr/local/app && \
+    mkdir -p /usr/local/app && \
+    addgroup -g 1000 app && \
+    adduser -u 1000 -G app -D app -s /bin/bash -h /usr/local/app && \
     adduser app wheel && \
+    chown -R app:app /usr/local/app && \
     echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel && \
     rm -rf /var/cache/apk/* /tmp/*
 CMD ["/boot.sh"]
