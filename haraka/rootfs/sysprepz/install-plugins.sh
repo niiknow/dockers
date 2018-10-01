@@ -6,3 +6,4 @@ curl -fSL $BASEURL/madeingnecca/haraka-plugins/master/relay_fake.js -o relay_fak
 
 # install queue plugin
 rsync -raz /sysprepz/plugins/ /app/haraka/plugins
+rsync /sysprepz/config/ /app/haraka/config

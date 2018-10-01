@@ -1,4 +1,4 @@
-// outbound_bounce_to_s3.js
+// outbounce_to_s3.js
 var AWS = require('aws-sdk'), util = require('util');
 
 AWS.config.update({
@@ -8,12 +8,13 @@ AWS.config.update({
 });
 
 exports.register = function () {
-  this.logdebug("Initializing outbound_bounce_to_s3");
+  this.logdebug("Initializing outbounce_to_s3");
 
-  this.s3Bucket         = process.env.AWS_BUCKET;
-  this.fileExtension    = '.json';
-  this.copyAllAddresses = true;
-  this.bucketPrefix     = 'email/outbound/';
+  var config = this.config.get('aws_config.json')
+  AWS.config.update(aws);
+
+  this.bucket           = config.outbounce.bucket;
+  this.fileExtension    = config.outbounce.fileExtension;
 };
 
 exports.hook_bounce = function (next, connection) {
@@ -52,6 +53,7 @@ exports.hook_bounce = function (next, connection) {
       destination: addresses
     }
   };
+  var body = JSON.stringify(innerMessage);
 
   connection.logdebug(util.inspect(innerMessage, false, null));
 
@@ -59,8 +61,8 @@ exports.hook_bounce = function (next, connection) {
     var key = address + plugin.fileExtension;
 
     var params = {
-      Bucket: plugin.s3Bucket,
-      Key: plugin.bucketPrefix + key,
+      Bucket: plugin.bucket,
+      Key: key,
       Body: body,
       ContentType: 'application/json'
     };

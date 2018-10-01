@@ -1,0 +1,17 @@
+{
+  "aws": {
+    "accessKeyId": "ABCD-ABCD-ABCD",
+    "secretAccessKey": "ABCD-ABCD-ABCD-ABCD-ABCD-ABCD",
+    "region": "us-east-1"
+  },
+  "inbound": {
+    "bucket": "yourbucket/email/inbound",
+    "fileExtension": ".eml.gz",
+    "compress": true,
+    "copyAllAddresses": true
+  },
+  "outbounce": {
+    "bucket": "yourbucket/email/bounce",
+    "fileExtension": ".json"
+  }
+}

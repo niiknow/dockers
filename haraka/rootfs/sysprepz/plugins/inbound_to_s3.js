@@ -2,20 +2,16 @@
 var AWS = require("aws-sdk"), zlib = require("zlib"),
     util = require('util'), async = require("async"), Transform = require('stream').Transform;
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_DEFAULT_REGION
-});
-
 exports.register = function () {
   this.logdebug("Initializing inbound_to_s3");
 
-  this.s3Bucket         = process.env.AWS_BUCKET;
-  this.zipBeforeUpload  = true;
-  this.fileExtension    = '.json';
-  this.copyAllAddresses = true;
-  this.bucketPrefix     = 'email/inbound/';
+  var config = this.config.get('aws_config.json')
+  AWS.config.update(aws);
+
+  this.bucket           = config.inbound.bucket;
+  this.fileExtension    = config.inbound.fileExtension;
+  this.compress         = config.inbound.compress;
+  this.copyAllAddresses = config.inbound.copyAllAddresses;
 };
 
 exports.hook_queue = function (next, connection) {
@@ -36,8 +32,8 @@ exports.hook_queue = function (next, connection) {
     var key = address.user + "@" + address.host + "/" + transaction.uuid + plugin.fileExtension;
 
     var params = {
-      Bucket: plugin.s3Bucket,
-      Key: plugin.bucketPrefix + key,
+      Bucket: plugin.bucket,
+      Key: key,
       Body: body
     };
 
