@@ -14,12 +14,13 @@ RUN mkdir -p /etc/BUILDS/ \
  && haraka -i /app/haraka \
  && cd /app/haraka \
  && npm install \
+ && npm install --save aws-sdk \
  && mkdir -p /app/haraka-bak /app/haraka/plugins \
- && curl -fSL https://raw.githubusercontent.com/madeingnecca/haraka-plugins/master/relay_fake.js -o /app/haraka/plugins/relay_fake.js \
+ && sh /sysprepz/install-plugins.sh \
  && rsync -raz /app/haraka/ /app/haraka-bak \
  && chown -R node:node /app \
  && apk del --purge deps \
- && rm -rf /var/cache/apk/* /tmp/*
+ && rm -rf /var/cache/apk/* /tmp/* /sysprepz/*
 EXPOSE 25 80 443 465 587
 VOLUME ["/app"]
 CMD ["/boot.sh"]
