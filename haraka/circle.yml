@@ -1,0 +1,25 @@
+#####
+# Circle CI
+#
+# For running docker images on circle ci, see: https://circleci.com/docs/docker
+# For circle.yml explanation, see: https://circleci.com/docs/manually
+# Python specific configuration, see: https://circleci.com/docs/language-python
+#####
+
+machine:
+    services:
+        - docker
+
+dependencies:
+    pre:
+        - docker info
+        - sudo apt-get install -y swaks
+        - docker build -t haraka .
+        - mkdir -p ./haraka/config
+        - sudo echo relay_fake > ./haraka/config/plugins
+        - docker run -d -p 25:25 -v $(pwd)/haraka:/usr/local/haraka
+
+test:
+    override:
+        - sleep 10
+        - swaks --to alpine@localhost

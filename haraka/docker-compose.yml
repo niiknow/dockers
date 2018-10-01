@@ -1,0 +1,12 @@
+haraka:
+  build: .
+  ports:
+    - "25:25"
+    - "587:587"
+    - "465:465"
+  volumes:
+    - /opt/haraka:/usr/local/haraka
+  log_driver: "json-file"
+  log_opt:
+    max-size: "10k"
+    max-file: "20"
