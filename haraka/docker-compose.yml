@@ -5,7 +5,7 @@ haraka:
     - "587:587"
     - "465:465"
   volumes:
-    - /opt/haraka:/usr/local/haraka
+    - ./haraka:/usr/local/haraka
   log_driver: "json-file"
   log_opt:
     max-size: "10k"
