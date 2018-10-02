@@ -1,12 +1,15 @@
-haraka:
-  build: .
-  ports:
-    - "127.0.0.1:25:25"
-    - "127.0.0.1:587:587"
-    - "127.0.0.1:465:465"
-  volumes:
-    - ./data/haraka:/app/haraka
-  log_driver: "json-file"
-  log_opt:
-    max-size: "10k"
-    max-file: "20"
+version: "3.3"
+
+services:
+  haraka:
+    image: niiknow/haraka:0.1.1
+    container_name: haraka
+    volumes:
+      - "./data:/app/haraka:rw"
+    ports:
+      - "25:25"
+      - "587:587"
+      - "465:465"
+    labels:
+      - "haraka"
+    restart: unless-stopped

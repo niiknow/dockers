@@ -11,7 +11,7 @@ exports.register = function () {
   this.logdebug("Initializing outbounce_to_s3");
 
   var config = this.config.get('aws_config.json')
-  AWS.config.update(aws);
+  AWS.config.update(config.aws);
 
   this.bucket           = config.outbounce.bucket;
   this.fileExtension    = config.outbounce.fileExtension;
