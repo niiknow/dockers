@@ -13,6 +13,7 @@ exports.register = function () {
   this.publicKey  = this.load_key('dkim/'+this.myDomain+'/public');
   this.mySelector = this.load_key('dkim/'+this.myDomain+'/selector');
   this.baseDir    = process.env.HARAKA || '';
+  this.knownHosts = {}; // known hosts caching
 }
 
 exports.load_key = function (file) {
@@ -52,6 +53,12 @@ exports.hook_queue_outbound = function (next, connection) {
     }
 
     var host = [selector, '_domainkey', domain].join('.');
+
+    // get known valid hosts from cache
+    if (plugin.knownHosts[host]) {
+      return next();
+    }
+
     dns.resolveTxt(host, function(err, result) {
       if (err) {
         return next(OK, 'Error: ' + err);
@@ -82,6 +89,7 @@ exports.hook_queue_outbound = function (next, connection) {
         return next(OK, 'Error: Local DKIM (public key) does not match DNS record - ' + host);
       }
 
+      plugin.knownHosts[host] = true;
       return next();
     });
   });
