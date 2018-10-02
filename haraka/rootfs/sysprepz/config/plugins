@@ -7,6 +7,8 @@
 #
 # To see the help docs for a particular plugin, run 'haraka -h plugin.name'
 
+dkim_bouncer
+
 #process_title
 # Log to syslog (see 'haraka -h syslog')
 # https://github.com/haraka/haraka-plugin-syslog
@@ -31,6 +33,7 @@
 helo.checks
 
 # see 'haraka -h tls' for config instructions before enabling!
+# tls
 tls
 
 #

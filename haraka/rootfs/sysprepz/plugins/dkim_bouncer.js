@@ -1,38 +1,48 @@
 // dkim_bouncer.js
 // - check if dkim match dns, otherwise, disable dkim signing
 //
-const fs   = require('fs');
-const dns  = require('dns');
+const fs         = require('fs');
+const path       = require('path');
+const dns        = require('dns');
+const async      = require("async")
+const addrparser = require('address-rfc2822');
 
 exports.register = function () {
   this.logdebug('Initializing dkim_bouncer');
-  this.cfg = this.config.get('dkim_bouncer.ini');
+  this.myDomain   = this.load_key('me');
+  this.publicKey  = this.load_key('dkim/'+this.myDomain+'/public');
+  this.mySelector = this.load_key('dkim/'+this.myDomain+'/selector');
+  this.baseDir    = process.env.HARAKA || '';
 }
 
 exports.load_key = function (file) {
-  return this.config.get(file, 'data').join('\n');
+  return this.parseKeyOnly(this.config.get(file, 'data').join('\n'));
 };
 
-exports.hook_queue_outbound = exports.hook_pre_send_trans_email = function (next, connection) {
+exports.hook_queue_outbound = function (next, connection) {
   const plugin = this;
-  let selector = plugin.cfg.selector;
-  let domain = plugin.cfg.get_sender_domain(connection) || plugin.cfg.domain;
-  let publicKey;
+  let selector = plugin.mySelector;
+  let domain = plugin.get_sender_domain(connection);
+  let publicKey = this.publicKey;
 
   if (!domain) {
-    connection.transaction.results.add(plugin, {skip: "sending domain not detected", emit: true });
+    connection.transaction.results.add(plugin, {skip: "sending domain not detected " + domain, emit: true });
     return next();
   }
 
-  plugin.get_key_dir(connection, function(keydir) {
+  plugin.get_key_dir(domain, function(keydir) {
     if (keydir) {
-      connection.logdebug(plugin, 'dkim_domain: '+domain);
+      plugin.logdebug(plugin, 'dkim_domain: '+domain);
       publicKey = plugin.load_key('dkim/'+domain+'/public');
       selector  = plugin.load_key('dkim/'+domain+'/selector');
+    } else {
+      // auto create dkim symbolic link
+      const baseDir = process.env.HARAKA || '';
+      fs.symlinkSync(plugin.myDomain+'/', path.resolve(baseDir + '/config/dkim/'+domain), 'dir');
     }
 
     if (!selector) {
-      connection.transaction.results.add(plugin, {skip: "sending domain selector not detected", emit: true });
+      connection.transaction.results.add(plugin, {skip: "sending domain selector not detected " + selector, emit: true });
       return next();
     }
 
@@ -41,16 +51,14 @@ exports.hook_queue_outbound = exports.hook_pre_send_trans_email = function (next
       return next();
     }
 
-    publicKey = this.parseKeyOnly(publicKey);
-
     var host = [selector, '_domainkey', domain].join('.');
     dns.resolveTxt(host, function(err, result) {
       if (err) {
-        return next(DENYSOFT, 'Error: ' + err);
+        return next(OK, 'Error: ' + err);
       }
 
       if (!result || !result.length) {
-        return next(DENYSOFT, 'Error: Selector not found - ' + host);
+        return next(OK, 'Error: Selector not found - ' + host);
       }
 
       var data = {};
@@ -61,16 +69,18 @@ exports.hook_queue_outbound = exports.hook_pre_send_trans_email = function (next
           val = (row.join('=') || '').toString().trim();
           data[key] = val;
       });
+      plugin.logdebug(plugin, JSON.stringify(data));
 
       if (!data.p) {
-        return next(DENYSOFT, 'Error: DNS TXT record does not seem to be a DKIM value - ' + host);
+        return next(OK, 'Error: DNS TXT record does not seem to be a DKIM value - ' + host);
       }
 
       // if foundKey does not match local key, reject
       var foundKey = plugin.parseKeyOnly(data.p);
       if (foundKey != publicKey) {
-        connection.logdebug('Host: '+ domain, ' Local key: '+publicKey, ' DNS key: '+foundKey);
-        return next(DENYSOFT, 'Error: Local DKIM (public key) does not match DNS record - ' + host);
+        plugin.logdebug('Host: '+ domain, ' Local key: '+publicKey, ' DNS key: '+foundKey);
+        next(OK, 'Error: Local DKIM (public key) does not match DNS record - ' + host);
+        return;
       }
 
       return next();
@@ -79,20 +89,17 @@ exports.hook_queue_outbound = exports.hook_pre_send_trans_email = function (next
 }
 
 exports.parseKeyOnly = function (data) {
-  var rst = data.trim().split("\n");
+  var rst = data.trim().split('\n');
   if (rst.length > 2) {
-    if (data.indexOf('---') > 0) {
-      rst = rst.slice(1, -1);
-    }
+    rst = rst.slice(1, -1);
   }
 
-  return rst.join('\n').replace(/\s+/gim, '').replace(/\"+/gim, '').trim();
+  data = rst.join(' ').replace(/\s+/gim, '').replace(/\"+/gim, '').trim();
+  return data;
 }
 
-exports.get_key_dir = function (connection, cb) {
+exports.get_key_dir = function (domain, cb) {
   var plugin = this;
-  var txn    = connection.transaction;
-  var domain = plugin.get_sender_domain(txn);
 
   if (!domain) { return cb(); }
 
@@ -106,7 +113,7 @@ exports.get_key_dir = function (connection, cb) {
     var dom = labels.slice(i).join('.');
     dom_hier[i] = haraka_dir + "/config/dkim/"+dom;
   }
-  connection.logdebug(plugin, dom_hier);
+  plugin.logdebug(plugin, dom_hier);
 
   async.filter(dom_hier, function(filePath, callback) {
     fs.access(filePath, function(err) {
@@ -121,7 +128,7 @@ exports.get_key_dir = function (connection, cb) {
 exports.get_sender_domain = function (connection) {
   const plugin = this;
   if (!connection.transaction) {
-    connection.logerror(plugin, 'no transaction!')
+    plugin.logerror(plugin, 'no transaction!')
     return;
   }
 
@@ -132,7 +139,7 @@ exports.get_sender_domain = function (connection) {
   if (txn.mail_from.host) {
     try { domain = txn.mail_from.host.toLowerCase(); }
     catch (e) {
-      connection.logerror(plugin, e);
+      plugin.logerror(plugin, e);
     }
   }
 
