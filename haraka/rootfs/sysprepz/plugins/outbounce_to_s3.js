@@ -47,10 +47,12 @@ exports.hook_bounce = function (next, connection) {
         // this is a very naive diagnostic code parsing, but it work for
         // my use-case and logic of taking a hard stance on bounce
         try {
-          rst.codePrefix = rst.diagnosticCode.trim().replace(/\D+/, '')[0];
-          rst.hardBounce = parseInt(rst.codePrefix) > 4;
+          if (typeof(rst.diagnosticCode) === 'string') {
+            rst.codePrefix = rst.diagnosticCode.replace(/\D+/, '').trim().substr(0,1);
+            rst.hardBounce = rst.codePrefix == '5';
+          }
         } catch(e) {
-          connection.loginfo('diagnostic code parsing error', e, rst);
+          connection.loginfo('diagnostic code parsing error ', e + ' ', rst);
         }
 
         // since the status is stored on s3, we can always inspect
