@@ -1,4 +1,6 @@
 // inbound_to_s3.js
+// - store incoming valid host (host_list) mail to s3
+//
 var AWS = require("aws-sdk"), zlib = require("zlib"),
     util = require('util'), async = require("async"),
     Transform = require('stream').Transform;

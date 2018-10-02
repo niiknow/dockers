@@ -1,4 +1,6 @@
 // outbounce_to_s3.js
+// - store bounce email to s3
+//
 var AWS = require('aws-sdk'), zlib = require("zlib"),
     util = require('util'), async = require("async"),
     Transform = require('stream').Transform;

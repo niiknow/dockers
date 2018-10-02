@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 source /etc/envvars
-
 export PATH=$PATH:/usr/local/bin
+HARAKA=/app/haraka
 
 exec 2>&1
-exec /usr/local/bin/haraka -c /app/haraka 2>&1
+exec /usr/local/bin/haraka -c $HARAKA 2>&1

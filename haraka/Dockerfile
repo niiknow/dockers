@@ -1,7 +1,7 @@
 FROM node:8-alpine
 LABEL maintainer="noogen <friends@niiknow.org>"
 USER root
-ENV HOME=/root PATH=$PATH:/usr/local/bin
+ENV HOME=/root PATH=$PATH:/usr/local/bin HARAKA=/app/haraka
 WORKDIR /root
 COPY rootfs/. /
 RUN mkdir -p /etc/BUILDS/ \
@@ -11,13 +11,13 @@ RUN mkdir -p /etc/BUILDS/ \
  && apk --no-cache --update add --virtual deps \
     g++ gcc git make python \
  && npm install --unsafe-perm -g Haraka \
- && haraka -i /app/haraka \
- && cd /app/haraka \
+ && haraka -i $HARAKA \
+ && cd $HARAKA \
  && npm install \
  && npm install --save aws-sdk \
- && mkdir -p /app/haraka-bak /app/haraka/plugins \
+ && mkdir -p $HARAKA-bak $HARAKA/plugins \
  && sh /sysprepz/install-plugins.sh \
- && rsync -raz /app/haraka/ /app/haraka-bak \
+ && rsync -raz $HARAKA/ $HARAKA-bak \
  && chown -R node:node /app \
  && apk del --purge deps \
  && rm -rf /var/cache/apk/* /tmp/* /sysprepz/*
