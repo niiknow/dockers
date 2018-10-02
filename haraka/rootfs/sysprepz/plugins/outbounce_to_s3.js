@@ -38,10 +38,23 @@ exports.hook_bounce = function (next, connection) {
           emailAddress: rcpt_to.address(),
           action: "failed",
           status: "UNKNOWN",
+          codePrefix: "NA",
+          hardBounce: false,
           diagnosticCode: rcpt_to.reason ? rcpt_to.reason : connection.bounce_error
         };
-        rst.codePrefix = rst.diagnosticCode.trim().replace(/\D+/, '')[0];
-        rst.hardBounce = parseInt(rst.codePrefix) > 4;
+
+        // if you need a better handling/message, there's always AWS SES
+        // this is a very naive diagnostic code parsing, but it work for
+        // my use-case and logic of taking a hard stance on bounce
+        try {
+          rst.codePrefix = rst.diagnosticCode.trim().replace(/\D+/, '')[0];
+          rst.hardBounce = parseInt(rst.codePrefix) > 4;
+        } catch(e) {
+          connection.loginfo('diagnostic code parsing error', e, rst);
+        }
+
+        // since the status is stored on s3, we can always inspect
+        // later/in-retrospective to remove the bounce record
         return rst;
       }),
       timestamp: date.toISOString(),
