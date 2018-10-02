@@ -1,6 +1,7 @@
 // inbound_to_s3.js
 var AWS = require("aws-sdk"), zlib = require("zlib"),
-    util = require('util'), async = require("async"), Transform = require('stream').Transform;
+    util = require('util'), async = require("async"),
+    Transform = require('stream').Transform;
 
 exports.register = function () {
   this.logdebug("Initializing inbound_to_s3");
@@ -21,7 +22,7 @@ exports.hook_queue = function (next, connection) {
   var emailTo = transaction.rcpt_to;
 
   var gzip = zlib.createGzip();
-  var transformer = plugin.zipBeforeUpload ? gzip : new TransformStream();
+  var transformer = plugin.compress ? gzip : new TransformStream();
   var body = transaction.message_stream.pipe(transformer);
 
   var s3 = new AWS.S3();
@@ -29,7 +30,7 @@ exports.hook_queue = function (next, connection) {
   var addresses = plugin.copyAllAddresses ? transaction.rcpt_to : transaction.rcpt_to[0];
 
   async.each(addresses, function (address, eachCallback) {
-    var key = address.user + "@" + address.host + "/" + transaction.uuid + plugin.fileExtension;
+    var key = address.host + '/' + address.user + "/" + transaction.uuid + plugin.fileExtension;
 
     var params = {
       Bucket: plugin.bucket,

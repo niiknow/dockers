@@ -1,5 +1,7 @@
 // outbounce_to_s3.js
-var AWS = require('aws-sdk'), util = require('util');
+var AWS = require('aws-sdk'), zlib = require("zlib"),
+    util = require('util'), async = require("async"),
+    Transform = require('stream').Transform;
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -32,12 +34,15 @@ exports.hook_bounce = function (next, connection) {
       bounceType: "Transient",
       bounceSubType: "General",
       bouncedRecipients: connection.todo.rcpt_to.map(function (rcpt_to) {
-        return {
+        var rst = {
           emailAddress: rcpt_to.address(),
           action: "failed",
           status: "UNKNOWN",
           diagnosticCode: rcpt_to.reason ? rcpt_to.reason : connection.bounce_error
         };
+        rst.codePrefix = rst.diagnosticCode.trim().replace(/\D+/, '')[0];
+        rst.hardBounce = parseInt(rst.codePrefix) > 4;
+        return rst;
       }),
       timestamp: date.toISOString(),
       feedbackId: "UNKNOWN",
@@ -53,18 +58,24 @@ exports.hook_bounce = function (next, connection) {
       destination: addresses
     }
   };
-  var body = JSON.stringify(innerMessage);
+  var isHard = innerMessage.bounce.bouncedRecipients[0].hardBounce;
+  if (isHard) {
+    innerMessage.notificationType = 'Bounce';
+    innerMessage.bounce.bounceType = 'Permanent';
+  }
 
+  var body = JSON.stringify(innerMessage);
+  var s3 = new AWS.S3();
   connection.logdebug(util.inspect(innerMessage, false, null));
 
   async.each(addresses, function (address, eachCallback) {
-    var key = address + plugin.fileExtension;
-
+    var key = (address + plugin.fileExtension).toLowerCase();
     var params = {
       Bucket: plugin.bucket,
       Key: key,
       Body: body,
-      ContentType: 'application/json'
+      ContentType: 'application/json',
+      Tagging: isHard ? 'year=1' : 'month=3'
     };
 
     s3.upload(params).on('httpUploadProgress', function (evt) {
