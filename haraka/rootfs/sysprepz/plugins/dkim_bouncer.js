@@ -1,5 +1,5 @@
 // dkim_bouncer.js
-// - check if dkim match dns, otherwise, disable dkim signing
+// - check if dkim match dns; if false, reject email
 //
 const fs         = require('fs');
 const path       = require('path');
@@ -79,8 +79,7 @@ exports.hook_queue_outbound = function (next, connection) {
       var foundKey = plugin.parseKeyOnly(data.p);
       if (foundKey != publicKey) {
         plugin.logdebug('Host: '+ domain, ' Local key: '+publicKey, ' DNS key: '+foundKey);
-        next(OK, 'Error: Local DKIM (public key) does not match DNS record - ' + host);
-        return;
+        return next(OK, 'Error: Local DKIM (public key) does not match DNS record - ' + host);
       }
 
       return next();
