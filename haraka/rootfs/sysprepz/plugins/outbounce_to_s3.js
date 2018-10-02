@@ -38,7 +38,7 @@ exports.hook_bounce = function (next, connection) {
           emailAddress: rcpt_to.address(),
           action: "failed",
           status: "UNKNOWN",
-          codePrefix: "NA",
+          codePrefix: "UNKNOWN",
           hardBounce: false,
           diagnosticCode: rcpt_to.reason ? rcpt_to.reason : connection.bounce_error
         };
