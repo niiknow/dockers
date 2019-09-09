@@ -1,4 +1,4 @@
-FROM node:8-alpine
+FROM node:12-alpine
 LABEL maintainer="noogen <friends@niiknow.org>"
 USER root
 ENV HOME=/root PATH=$PATH:/usr/local/bin HARAKA=/app/haraka
