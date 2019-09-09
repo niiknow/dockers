@@ -13,16 +13,24 @@ exports.hook_rcpt_ok = function (next, connection, rcpt) {
   }
 
   const rcpt_to = rcpt.address();
-  const url = plugin.cdnUrl.trim() + rcpt_to.toLowerCase().trim() + '.json';
+  const url = plugin.cdnUrl.trim() + encodeURIComponent(rcpt_to.toLowerCase().trim());
   plugin.logdebug(plugin, url);
+
+  var str = '';
 
   const req = http.request(url, (res) => {
     // plugin.logdebug(plugin, res);
-    if (res.statusCode < 200 || res.statusCode > 299) {
-      return next();
-    }
+    res.on('data', function (chunk) {
+      str += chunk;
+    });
 
-    return next(DENYSOFT, 'Error: user has bounce history - ' + rcpt_to);
+    res.on('end', function () {
+      if (str.indexOf('true') > -1) {
+        return next();
+      }
+
+      return next(DENYSOFT, 'Error: user has bounce history - ' + rcpt_to);
+    });
   });
 
   req.on('error', (err) => {

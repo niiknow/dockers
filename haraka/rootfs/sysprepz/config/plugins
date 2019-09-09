@@ -83,4 +83,4 @@ dkim_verify
 
 #watch
 inbound_to_s3
-outbounce_to_s3
+outbounce_to_bouncer_api

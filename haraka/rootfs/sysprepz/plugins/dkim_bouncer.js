@@ -169,7 +169,7 @@ exports.get_sender_domain = function (connection) {
   }
   if (!addrs || ! addrs.length) return domain;
 
-  // If From has a single address, we're done
+  // if From has a single address, we're done
   if (addrs.length === 1 && addrs[0].host) {
     let fromHost = addrs[0].host();
     if (fromHost) {
@@ -179,7 +179,7 @@ exports.get_sender_domain = function (connection) {
     return fromHost;
   }
 
-  // If From has multiple-addresses, we must parse and
+  // if From has multiple-addresses, we must parse and
   // use the domain in the Sender header.
   const sender = txn.header.get('Sender');
   if (sender) {

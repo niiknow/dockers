@@ -1,24 +1,12 @@
-// outbounce_to_s3.js
-// - store bounce email to s3
+// outbounce_to_bouncer_api.js
+// - store bounce to bouncer api: https://github.com/niiknow/email-bouncer-api
 //
-var AWS = require('aws-sdk'), zlib = require("zlib"),
-    util = require('util'), async = require("async"),
-    Transform = require('stream').Transform;
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_DEFAULT_REGION
-});
+const http  = require('https');
 
 exports.register = function () {
-  this.logdebug("Initializing outbounce_to_s3");
+  this.logdebug("Initializing outbounce_to_bouncer_api");
 
-  var config = this.config.get('aws_config.json')
-  AWS.config.update(config.aws);
-
-  this.bucket           = config.outbounce.bucket;
-  this.fileExtension    = config.outbounce.fileExtension;
+  this.host = this.config.get('outbounce_to_bouncer_api.host');
 };
 
 exports.hook_bounce = function (next, connection) {
@@ -31,7 +19,7 @@ exports.hook_bounce = function (next, connection) {
   })
 
   var innerMessage = {
-    notificationType: "Complaint",
+    notificationType: "Bounce",
     bounce: {
       bounceType: "Transient",
       bounceSubType: "General",
@@ -77,36 +65,33 @@ exports.hook_bounce = function (next, connection) {
   };
   var isHard = innerMessage.bounce.bouncedRecipients[0].hardBounce;
   if (isHard) {
-    innerMessage.notificationType = 'Bounce';
     innerMessage.bounce.bounceType = 'Permanent';
   }
 
-  var body = JSON.stringify(innerMessage);
+  var body = JSON.stringify({ Message: innerMessage });
   var s3 = new AWS.S3();
   connection.logdebug(util.inspect(innerMessage, false, null));
 
-  async.each(addresses, function (address, eachCallback) {
-    var key = (address + plugin.fileExtension).toLowerCase();
-    var params = {
-      Bucket: plugin.bucket,
-      Key: key,
-      Body: body,
-      ContentType: 'application/json',
-      Tagging: isHard ? 'year=1' : 'month=3'
-    };
-
-    s3.upload(params).on('httpUploadProgress', function (evt) {
-      plugin.logdebug("Uploading file... Status : " + util.inspect(evt));
-    }).send(function (err, data) {
-      plugin.logdebug("S3 Send response data : " + util.inspect(data));
-      eachCallback(err);
-    });
-  }, function (err) {
-    if (err) {
-      plugin.logerror(err);
-      next();
-    } else {
-      next(OK);
+  // single post that include all email addresses
+  const options = {
+    hostname: plugin.host,
+    port: 443,
+    path: '/api/v1/bounces/aws-ses',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': body.length
     }
+  }
+
+  const req = http.request(options, (res) => {
+    return next();
   });
+
+  req.on('error', (err) => {
+    // on error, proceed to next
+    return next();
+  });
+
+  req.end();
 };

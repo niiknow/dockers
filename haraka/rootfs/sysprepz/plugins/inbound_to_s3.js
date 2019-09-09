@@ -1,9 +1,9 @@
 // inbound_to_s3.js
 // - store incoming valid host (host_list) mail to s3
 //
-var AWS = require("aws-sdk"), zlib = require("zlib"),
-    util = require('util'), async = require("async"),
-    Transform = require('stream').Transform;
+const AWS = require("aws-sdk"), zlib = require("zlib"),
+      util = require('util'), async = require("async"),
+      Transform = require('stream').Transform;
 
 exports.register = function () {
   this.logdebug("Initializing inbound_to_s3");
@@ -57,7 +57,7 @@ exports.hook_queue = function (next, connection) {
 };
 
 exports.shutdown = function () {
-  this.loginfo("Shutting down queue plugin.");
+  this.loginfo("Shutting down inbound_to_s3 plugin.");
 };
 
 //Dummy transform stream to help with a haraka issue. Can't use message_stream as a S3 API parameter without this.
