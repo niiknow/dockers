@@ -4,5 +4,12 @@ source /etc/envvars
 export PATH=$PATH:/usr/local/bin
 HARAKA=/app/haraka
 
+if [ ! -f /app/haraka/package-lock.json ]; then
+  echo "[i] reinstalling"
+  rm -rf $HARAKA/node_modules
+  cd $HARAKA
+  npm install
+fi
+
 exec 2>&1
 exec /usr/local/bin/haraka -c $HARAKA 2>&1

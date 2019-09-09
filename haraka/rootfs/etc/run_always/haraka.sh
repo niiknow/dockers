@@ -26,12 +26,4 @@ if [ -n "$SMTP_HOST" ]; then
   echo "$SMTP_HOST" > /app/haraka/config/me
 fi
 
-
-if [ ! -f /app/haraka/package-lock.json ]; then
-  echo "[i] reinstalling"
-  rm -rf /app/haraka/node_modules
-  cd /app/haraka/
-  npm install
-fi
-
 rm -f /etc/service/haraka/down
