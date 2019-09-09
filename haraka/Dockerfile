@@ -1,4 +1,4 @@
-FROM node:8-alpine
+FROM node:12-alpine
 LABEL maintainer="noogen <friends@niiknow.org>"
 USER root
 ENV HOME=/root PATH=$PATH:/usr/local/bin HARAKA=/app/haraka
@@ -10,7 +10,7 @@ RUN mkdir -p /etc/BUILDS/ \
  && sh /sysprepz/base-install.sh \
  && apk --no-cache --update add --virtual deps \
     g++ gcc git make python \
- && npm install --unsafe-perm -g Haraka \
+ && npm install --unsafe-perm -g git+https://github.com/haraka/Haraka.git \
  && haraka -i $HARAKA \
  && cd $HARAKA \
  && npm install \
