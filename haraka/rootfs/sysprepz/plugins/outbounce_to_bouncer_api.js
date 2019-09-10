@@ -1,7 +1,8 @@
 // outbounce_to_bouncer_api.js
 // - store bounce to bouncer api: https://github.com/niiknow/email-bouncer-api
 //
-const http  = require('https');
+const http  = require('https'),
+      util = require('util');
 
 exports.register = function () {
   this.logdebug("Initializing outbounce_to_bouncer_api");
