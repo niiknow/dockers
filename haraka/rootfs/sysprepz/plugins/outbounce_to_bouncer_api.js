@@ -7,7 +7,7 @@ const http  = require('https'),
 exports.register = function () {
   this.logdebug("Initializing outbounce_to_bouncer_api");
 
-  this.host = this.config.get('outbounce_to_bouncer_api.host');
+  this.host = this.config.get('outbounce_to_bouncer_api.host').trim();
 };
 
 exports.hook_bounce = function (next, connection) {
@@ -70,7 +70,6 @@ exports.hook_bounce = function (next, connection) {
   }
 
   var body = JSON.stringify({ Message: innerMessage });
-  var s3 = new AWS.S3();
   connection.logdebug(util.inspect(innerMessage, false, null));
 
   // single post that include all email addresses
@@ -86,11 +85,17 @@ exports.hook_bounce = function (next, connection) {
   }
 
   const req = http.request(options, (res) => {
+    this.loginfo('outbounce_to_bouncer_api sent');
     return next();
   });
 
   req.on('error', (err) => {
+    this.loginfo(`outbounce_to_bouncer_api error ${err}`);
     // on error, proceed to next
+    return next();
+  });
+
+  res.on('end', function () {
     return next();
   });
 
