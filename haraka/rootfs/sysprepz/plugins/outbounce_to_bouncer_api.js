@@ -69,7 +69,7 @@ exports.hook_bounce = function (next, connection) {
     innerMessage.bounce.bounceType = 'Permanent';
   }
 
-  var body = JSON.stringify({ Message: innerMessage });
+  var body = JSON.stringify({ Message: JSON.stringify(innerMessage), Type: 'Notification' });
   connection.logdebug(util.inspect(innerMessage, false, null));
 
   // single post that include all email addresses
@@ -84,20 +84,18 @@ exports.hook_bounce = function (next, connection) {
     }
   }
 
+  plugin.loginfo('outbounce_to_bouncer_api sending to: ' + plugin.host);
+
   const req = http.request(options, (res) => {
-    this.loginfo('outbounce_to_bouncer_api sent');
-    return next();
+    plugin.loginfo('outbounce_to_bouncer_api sent');
   });
 
   req.on('error', (err) => {
-    this.loginfo(`outbounce_to_bouncer_api error ${err}`);
-    // on error, proceed to next
-    return next();
+    plugin.logerror('outbounce_to_bouncer_api error: ' + err);
   });
 
-  res.on('end', function () {
-    return next();
-  });
-
+  req.write(body);
   req.end();
+
+  next(OK);
 };
