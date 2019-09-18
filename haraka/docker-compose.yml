@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   haraka:
-    image: niiknow/haraka:0.2.0
+    image: niiknow/haraka:0.3.2
     container_name: haraka
     volumes:
       - "./data:/app/haraka:rw"
