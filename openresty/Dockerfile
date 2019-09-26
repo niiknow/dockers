@@ -1,4 +1,4 @@
-FROM niiknow/base:0.2.1
+FROM niiknow/base:0.2.2
 
 LABEL maintainer="noogen <friends@niiknow.org>"
 
